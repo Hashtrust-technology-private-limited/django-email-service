@@ -1,6 +1,5 @@
-============
-django-mails
-============
+> django-mails
+
 django-mails is Django App to send simple or HTML template Emails by calling just hit of single function.
 
 Quick Start
