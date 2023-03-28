@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'email_service',
+    'ckeditor'
 ]
 
 MIDDLEWARE = [
@@ -127,11 +128,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 PRODUCT_NAME = os.environ.get("PRODUCT_NAME", "")
-EMAIL_FROM = os.environ.get("AUTHEMAIL_DEFAULT_EMAIL_FROM", "harsh@hashtrust.in")
+EMAIL_FROM = os.environ.get("AUTHEMAIL_DEFAULT_EMAIL_FROM", "")
 EMAIL_BCC = os.environ.get("AUTHEMAIL_DEFAULT_EMAIL_BCC", "")
 EMAIL_HOST = os.environ.get("AUTHEMAIL_EMAIL_HOST", "smtp.gmail.com")
 EMAIL_PORT = os.environ.get("AUTHEMAIL_EMAIL_PORT", 587)
-EMAIL_HOST_USER = os.environ.get("AUTHEMAIL_EMAIL_HOST_USER", "harsh@hashtrust.in")
-EMAIL_HOST_PASSWORD = os.environ.get("AUTHEMAIL_EMAIL_HOST_PASSWORD", "yrgxmgwgepfvlnop")
+EMAIL_HOST_USER = os.environ.get("AUTHEMAIL_EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("AUTHEMAIL_EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
