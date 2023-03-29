@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'email_service',
+    'django_mail_app.email_service',
     'ckeditor'
 ]
 

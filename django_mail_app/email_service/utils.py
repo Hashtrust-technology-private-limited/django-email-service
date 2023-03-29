@@ -13,16 +13,6 @@ from django.utils import timezone
 
 logger = logging.getLogger("emails")
 
-email_variables = {
-    "first_name": "",
-    "challenge_name": "",
-    "challenge_image": "",
-    "weight_to_lose": "",
-    "duration": "",
-    "product_name": settings.PRODUCT_NAME,
-    "support_email_address": settings.EMAIL_FROM,
-}
-
 
 def send_custom_email(
     recipient: List[str] | str,
@@ -35,26 +25,36 @@ def send_custom_email(
 ) -> None:
     from email_service.models import Email
 
-    if (
-        not recipient
-        or not ((path and template_prefix) or subject)
-        or not (path and template_prefix or body)
-    ):
-        return
+    if not recipient:
+        logger.error(
+            "Please provide at least one recipient."
+        )
+        return "Please provide at least one recipient."
+    
+    if not ((path and template_prefix) or subject):
+        logger.error(
+            "Please provide either path to html template or text subject of email."
+        )
+        return "Please provide either path to html template or text subject of email."
+
+    if not (path and template_prefix or body):
+        logger.error(
+            "Please provide either path to html template or text body of email."
+        )
+        return "Please provide either path to html template or text body of email."
+
     try:
         from_email = settings.EMAIL_FROM
         to = recipient if isinstance(recipient, list) else [recipient]
         bcc_email = settings.EMAIL_BCC
 
         if template:
-            email_variables.update(context)
-
-            email_subject = JinjaTemplate(template.subject).render(email_variables)
-            html_content = JinjaTemplate(template.body).render(email_variables)
+            email_subject = JinjaTemplate(template.subject).render(context)
+            html_content = JinjaTemplate(template.body).render(context)
 
         else:
-            subject_file = f"{path}/{template_prefix}_subject.txt"
-            html_file = f"{path}/{template_prefix}.html"
+            subject_file = f"{path}/{template_prefix}_subject.txt" if path else f"{template_prefix}_subject.txt"
+            html_file = f"{path}/{template_prefix}.html" if path else f"{template_prefix}.html"
             email_subject = render_to_string(subject_file).strip()
             html_content = render_to_string(body or html_file, context)
 
@@ -69,10 +69,8 @@ def send_custom_email(
         msg = EmailMultiAlternatives(
             subject or email_subject, text_content, from_email, to, bcc=[bcc_email]
         )
-        print(msg)
         msg.attach_alternative(html_content, "text/html")
-        sms_response = msg.send()
-        print(sms_response)
+        msg.send()
     except Exception as ex:
         logger.exception(
             f"""Caught exception {ex} while sending email with params:

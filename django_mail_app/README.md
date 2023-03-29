@@ -5,11 +5,13 @@ django-mails is Django App to send simple or HTML template Emails by calling jus
 Quick Start
 -----------
 1. Add 'email_service' to your INSTALLED_APPS setting like this::
+    ```
     INSTALLED_APPS = [
         ...
         'email_service',
         'ckeditor',
     ]
+    ```
 2. Run ``python manage.py migrate`` to create the django-mails models.
 3. Set Email Settings in setting.py file
     ```
