@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django_mail_app.email_service.models import Attachment,Template, Email
+from email_service.models import Attachment,Template, Email
 # Register your models here.
 
 class EmailAdmin(admin.ModelAdmin):
