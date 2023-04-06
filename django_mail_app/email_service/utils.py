@@ -23,21 +23,22 @@ def send_custom_email(
     subject: str | None = None,
     body: str | None = None,
 ) -> None:
-    from email_service.models import Email
+    from django_mail_app.email_service.models import Email
 
-    if not recipient:
+    if not recipient or len(recipient) == 0:
         logger.error(
             "Please provide at least one recipient."
         )
         return "Please provide at least one recipient."
-    
+    if (path or template_prefix) and (subject or body):
+        return "You can either send templated email or simple email at a time, not both."
     if not ((path and template_prefix) or subject):
         logger.error(
             "Please provide either path to html template or text subject of email."
         )
         return "Please provide either path to html template or text subject of email."
 
-    if not (path and template_prefix or body):
+    if not ((path and template_prefix) or body):
         logger.error(
             "Please provide either path to html template or text body of email."
         )
@@ -71,6 +72,7 @@ def send_custom_email(
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()
+        return "Email Sent Successfully."
     except Exception as ex:
         logger.exception(
             f"""Caught exception {ex} while sending email with params:

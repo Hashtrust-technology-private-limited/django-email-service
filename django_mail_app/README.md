@@ -8,7 +8,7 @@ Quick Start
     ```
     INSTALLED_APPS = [
         ...
-        'email_service',
+        'django_mail_app.email_service',
         'ckeditor',
     ]
     ```
