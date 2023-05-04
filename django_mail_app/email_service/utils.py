@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
-
+from email.mime.image import MIMEImage
 logger = logging.getLogger("emails")
 
 
@@ -22,8 +22,11 @@ def send_custom_email(
     context: Dict = {},
     subject: str | None = None,
     body: str | None = None,
+    attachement: any = None,
+    attachement_name : str | None = None,
+    enable_logo : bool = False
 ) -> None:
-    from django_mail_app.email_service.models import Email
+    from email_service.models import Email
 
     if not recipient or len(recipient) == 0:
         logger.error(
@@ -56,8 +59,8 @@ def send_custom_email(
         else:
             subject_file = f"{path}/{template_prefix}_subject.txt" if path else f"{template_prefix}_subject.txt"
             html_file = f"{path}/{template_prefix}.html" if path else f"{template_prefix}.html"
-            email_subject = render_to_string(subject_file).strip()
-            html_content = render_to_string(body or html_file, context)
+            email_subject = render_to_string(subject_file).strip() if template_prefix and path else subject
+            html_content = render_to_string(html_file, context) if template_prefix and path else body
 
         Email.objects.create(
             subject=email_subject,
@@ -71,6 +74,18 @@ def send_custom_email(
             subject or email_subject, text_content, from_email, to, bcc=[bcc_email]
         )
         msg.attach_alternative(html_content, "text/html")
+        if attachement:
+            msg.attach_file(f"{settings.BASE_DIR}/{attachement.url}")
+        
+        if enable_logo:
+            msg.content_subtype = 'html'
+            msg.mixed_subtype = 'related'
+            image_path = os.path.join(settings.BASE_DIR, f'static/{settings.LOGO_IMAGE_NAME}')
+            print(image_path)
+            with open(image_path, 'rb') as banner_image:
+                banner_image = MIMEImage(banner_image.read())
+                banner_image.add_header('Content-ID', f'<{settings.LOGO_IMAGE_NAME}>')
+                msg.attach(banner_image)
         msg.send()
         return "Email Sent Successfully."
     except Exception as ex:

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django_mail_app.email_service.utils import send_custom_email
+from email_service.utils import send_custom_email
 # Create your tests here.
 class TestEmail(TestCase):
 

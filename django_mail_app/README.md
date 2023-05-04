@@ -8,7 +8,7 @@ Quick Start
     ```
     INSTALLED_APPS = [
         ...
-        'django_mail_app.email_service',
+        'email_service',
         'ckeditor',
     ]
     ```
@@ -26,6 +26,7 @@ Quick Start
     ```
 4. Add Templates path to your TEMPLATES in setting.py
 5. import method to send email ``from email_service.utils import send_custom_email``
+6. set ``LOGO_IMAGE_NAME`` variable in setting.py file to add logo in email (Name should include subfolder inside static folder)
 
 Description
 -----------
@@ -38,6 +39,9 @@ send_custom_email(
     context: Dict = {},
     subject: str | None = None,
     body: str | None = None,
+    attachement: any = None,
+    attachement_name : str | None = None,
+    enable_logo : bool = False
 )
 ```
 * recipient : List of Receivers emails
@@ -46,4 +50,6 @@ send_custom_email(
 * template_prefix : html file name
 * context : context to replace variable name in template
 * subject : subject of email
-
+* attachement: attach file to send email as attachement
+* attachement_name : str | None = None,
+* enable_logo : set true to enable logo in email
