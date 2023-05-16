@@ -39,8 +39,8 @@ send_custom_email(
     context: Dict = {},
     subject: str | None = None,
     body: str | None = None,
-    attachement: any = None,
-    attachement_name : str | None = None,
+    attachment: any = None,
+    attachment_path : str | None = None,
     enable_logo : bool = False
 )
 ```
@@ -50,6 +50,6 @@ send_custom_email(
 * template_prefix : html file name
 * context : context to replace variable name in template
 * subject : subject of email
-* attachement: attach file to send email as attachement
-* attachement_name : str | None = None,
+* attachment: attach file to send email as attachement
+* attachment_path : send string path of attachment,
 * enable_logo : set true to enable logo in email

@@ -22,8 +22,8 @@ def send_custom_email(
     context: Dict = {},
     subject: str | None = None,
     body: str | None = None,
-    attachement: any = None,
-    attachement_name : str | None = None,
+    attachment: any = None,
+    attachment_path : str | None = None,
     enable_logo : bool = False
 ) -> None:
     from email_service.models import Email
@@ -74,14 +74,17 @@ def send_custom_email(
             subject or email_subject, text_content, from_email, to, bcc=[bcc_email]
         )
         msg.attach_alternative(html_content, "text/html")
-        if attachement:
-            msg.attach_file(f"{settings.BASE_DIR}/{attachement.url}")
+
+        if attachment_path:
+            msg.attach_file(f"{settings.BASE_DIR}/{attachment_path}")
+
+        if attachment:
+            msg.attach_file(f"{settings.BASE_DIR}/{attachment.url}")
         
         if enable_logo:
             msg.content_subtype = 'html'
             msg.mixed_subtype = 'related'
             image_path = os.path.join(settings.BASE_DIR, f'static/{settings.LOGO_IMAGE_NAME}')
-            print(image_path)
             with open(image_path, 'rb') as banner_image:
                 banner_image = MIMEImage(banner_image.read())
                 banner_image.add_header('Content-ID', f'<{settings.LOGO_IMAGE_NAME}>')
