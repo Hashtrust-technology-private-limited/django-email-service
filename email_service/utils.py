@@ -1,10 +1,9 @@
 import logging
 import os
-from typing import Dict, List
-
+from typing import Dict, List 
 import html2text
 from jinja2 import Template as JinjaTemplate
-
+from django.core.files.base import ContentFile
 # from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.core.mail.message import EmailMultiAlternatives
@@ -22,11 +21,11 @@ def send_custom_email(
     context: Dict = {},
     subject: str | None = None,
     body: str | None = None,
-    attachment: any = None,
+    attachments: List[ContentFile] = None,
     attachment_path : str | None = None,
     enable_logo : bool = False
 ) -> None:
-    from email_service.models import Email
+    from email_service.models import Email, Attachment
 
     if not recipient or len(recipient) == 0:
         logger.error(
@@ -62,7 +61,7 @@ def send_custom_email(
             email_subject = render_to_string(subject_file).strip() if template_prefix and path else subject
             html_content = render_to_string(html_file, context) if template_prefix and path else body
 
-        Email.objects.create(
+        email = Email.objects.create(
             subject=email_subject,
             body=html_content,
             recipients=recipient,
@@ -76,10 +75,18 @@ def send_custom_email(
         msg.attach_alternative(html_content, "text/html")
 
         if attachment_path:
-            msg.attach_file(f"{settings.BASE_DIR}/{attachment_path}")
+            full_file_path = f"{settings.BASE_DIR}/{attachment_path}"
+            with open(full_file_path, mode="rb") as file:
+                content_file = ContentFile(file.read(), name=os.path.basename(attachment_path))
+                attachement = Attachment.objects.create(file_field=content_file)
+                email.attachments.add(attachement)
+            msg.attach_file(full_file_path)
 
-        if attachment:
-            msg.attach_file(f"{settings.BASE_DIR}/{attachment.url}")
+        if attachments:
+            for attachement_file in attachments:
+                attachement = Attachment.objects.create(file = attachement_file)
+                email.attachments.add(attachement)
+                msg.attach_file(f"{settings.BASE_DIR}/{attachement.file.url}")
         
         if enable_logo:
             msg.content_subtype = 'html'
@@ -90,6 +97,8 @@ def send_custom_email(
                 banner_image.add_header('Content-ID', f'<{settings.LOGO_IMAGE_NAME}>')
                 msg.attach(banner_image)
         msg.send()
+        email.status = Email.EmailStatus.sent
+        email.save()
         return "Email Sent Successfully."
     except Exception as ex:
         logger.exception(
@@ -97,3 +106,5 @@ def send_custom_email(
             path-{path} template-{template_prefix}, recipient-{recipient},
             context-{context}, subject-{subject}, body-{body}"""
         )
+        email.status = Email.EmailStatus.error
+        email.save()

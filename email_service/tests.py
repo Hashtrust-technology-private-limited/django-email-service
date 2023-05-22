@@ -1,10 +1,12 @@
 from django.test import TestCase
 from email_service.utils import send_custom_email
+from django.core.files.base import ContentFile
+
 # Create your tests here.
 class TestEmail(TestCase):
 
     def setUp(self) -> None:
-        self.recipients = ['harsh@hashtrust.in']
+        self.recipients = ['testuser@gmail.com']
         self.path = "users"
         self.template = None
         self.template_prefix = 'user_welcome'
@@ -62,12 +64,17 @@ class TestEmail(TestCase):
         assert response == "You can either send templated email or simple email at a time, not both."
 
     def test_valid_email(self):
+        files = [
+            ContentFile(b"Hello World", name="file1.txt"),
+            ContentFile(b"Hello Python", name="file2.txt"),
+        ]
         response = send_custom_email(
             recipient= self.recipients,
             path = self.path,
             template = self.template,
             template_prefix = self.template_prefix,
             context = self.context,
+            attachments=files,
             subject = None,
             body = None
         )

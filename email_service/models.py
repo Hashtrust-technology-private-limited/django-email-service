@@ -8,11 +8,11 @@ class CreatedUpdatedMixin(models.Model):
 
     created_at = models.DateTimeField(
         auto_now_add=True,
-        help_text=_("The creation time, always in Asia/Tokyo timezone."),
+        help_text=_("The creation time, always in UTC timezone."),
     )
     updated_at = models.DateTimeField(
         auto_now=True,
-        help_text=_("The last update time, always in Asia/Tokyo timezone."),
+        help_text=_("The last update time, always in UTC timezone."),
     )
 
 class Attachment(CreatedUpdatedMixin):
@@ -35,7 +35,7 @@ class Template(models.Model):
     name = models.CharField(unique=True, max_length=50)
     subject = models.CharField(max_length=200)
     body = RichTextField(null=True, blank=True)
-    attachment = models.ManyToManyField(Attachment, blank=True)
+    attachments = models.ManyToManyField(Attachment, blank=True)
     template_type = models.PositiveSmallIntegerField(
         choices=TemplateType.choices, default=TemplateType.general
     )
@@ -61,7 +61,7 @@ class Email(CreatedUpdatedMixin):
     )
     from_user = models.EmailField()
     attachments = models.ManyToManyField(Attachment, blank=True)
-    state = models.PositiveSmallIntegerField(
+    status = models.PositiveSmallIntegerField(
         choices=EmailStatus.choices, default=EmailStatus.pending
     )
     remarks = models.TextField(
