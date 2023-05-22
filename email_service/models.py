@@ -2,6 +2,7 @@ from ckeditor.fields import RichTextField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+
 class CreatedUpdatedMixin(models.Model):
     class Meta:
         abstract = True
@@ -15,8 +16,9 @@ class CreatedUpdatedMixin(models.Model):
         help_text=_("The last update time, always in UTC timezone."),
     )
 
+
 class Attachment(CreatedUpdatedMixin):
-    file = models.FileField(upload_to='email_attachements')
+    file = models.FileField(upload_to="email_attachements")
 
     def __str__(self) -> str:
         return str(self.id)
@@ -42,6 +44,7 @@ class Template(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
 
 class Email(CreatedUpdatedMixin):
     class EmailStatus(models.IntegerChoices):

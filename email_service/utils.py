@@ -1,39 +1,40 @@
 import logging
 import os
-from typing import Dict, List 
+from email.mime.image import MIMEImage
+
 import html2text
-from jinja2 import Template as JinjaTemplate
-from django.core.files.base import ContentFile
+
 # from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from django.utils import timezone
-from email.mime.image import MIMEImage
+from jinja2 import Template as JinjaTemplate
+
 logger = logging.getLogger("emails")
 
 
 def send_custom_email(
-    recipient: List[str] | str,
+    recipient: list[str] | str,
     path: str | None = None,
     template: any = None,
     template_prefix: str | None = None,
-    context: Dict = {},
-    subject: str | None = None,
-    body: str | None = None,
-    attachments: List[ContentFile] = None,
-    attachment_path : str | None = None,
-    enable_logo : bool = False
+    context: dict = {},
+    subject: str = None,
+    body: str = None,
+    attachments: list[ContentFile] = None,
+    attachment_path: str | None = None,
+    enable_logo: bool = False,
 ) -> None:
-    from email_service.models import Email, Attachment
+    from email_service.models import Attachment, Email
 
     if not recipient or len(recipient) == 0:
-        logger.error(
-            "Please provide at least one recipient."
-        )
+        logger.error("Please provide at least one recipient.")
         return "Please provide at least one recipient."
     if (path or template_prefix) and (subject or body):
-        return "You can either send templated email or simple email at a time, not both."
+        return (
+            "You can either send templated email or simple email at a time, not both."
+        )
     if not ((path and template_prefix) or subject):
         logger.error(
             "Please provide either path to html template or text subject of email."
@@ -56,10 +57,24 @@ def send_custom_email(
             html_content = JinjaTemplate(template.body).render(context)
 
         else:
-            subject_file = f"{path}/{template_prefix}_subject.txt" if path else f"{template_prefix}_subject.txt"
-            html_file = f"{path}/{template_prefix}.html" if path else f"{template_prefix}.html"
-            email_subject = render_to_string(subject_file).strip() if template_prefix and path else subject
-            html_content = render_to_string(html_file, context) if template_prefix and path else body
+            subject_file = (
+                f"{path}/{template_prefix}_subject.txt"
+                if path
+                else f"{template_prefix}_subject.txt"
+            )
+            html_file = (
+                f"{path}/{template_prefix}.html" if path else f"{template_prefix}.html"
+            )
+            email_subject = (
+                render_to_string(subject_file).strip()
+                if template_prefix and path
+                else subject
+            )
+            html_content = (
+                render_to_string(html_file, context)
+                if template_prefix and path
+                else body
+            )
 
         email = Email.objects.create(
             subject=email_subject,
@@ -77,24 +92,28 @@ def send_custom_email(
         if attachment_path:
             full_file_path = f"{settings.BASE_DIR}/{attachment_path}"
             with open(full_file_path, mode="rb") as file:
-                content_file = ContentFile(file.read(), name=os.path.basename(attachment_path))
+                content_file = ContentFile(
+                    file.read(), name=os.path.basename(attachment_path)
+                )
                 attachement = Attachment.objects.create(file_field=content_file)
                 email.attachments.add(attachement)
             msg.attach_file(full_file_path)
 
         if attachments:
             for attachement_file in attachments:
-                attachement = Attachment.objects.create(file = attachement_file)
+                attachement = Attachment.objects.create(file=attachement_file)
                 email.attachments.add(attachement)
                 msg.attach_file(f"{settings.BASE_DIR}/{attachement.file.url}")
-        
+
         if enable_logo:
-            msg.content_subtype = 'html'
-            msg.mixed_subtype = 'related'
-            image_path = os.path.join(settings.BASE_DIR, f'static/{settings.LOGO_IMAGE_NAME}')
-            with open(image_path, 'rb') as banner_image:
+            msg.content_subtype = "html"
+            msg.mixed_subtype = "related"
+            image_path = os.path.join(
+                settings.BASE_DIR, f"static/{settings.LOGO_IMAGE_NAME}"
+            )
+            with open(image_path, "rb") as banner_image:
                 banner_image = MIMEImage(banner_image.read())
-                banner_image.add_header('Content-ID', f'<{settings.LOGO_IMAGE_NAME}>')
+                banner_image.add_header("Content-ID", f"<{settings.LOGO_IMAGE_NAME}>")
                 msg.attach(banner_image)
         msg.send()
         email.status = Email.EmailStatus.sent
