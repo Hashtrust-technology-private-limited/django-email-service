@@ -1,0 +1,14 @@
+
+[report]
+omit =
+    */settings.py
+    */manage.py
+    */tests.py
+    */base/models.py
+
+[run]
+omit =
+    */settings.py
+    */manage.py
+    */tests.py
+    */base/models.py

@@ -6,3 +6,7 @@ html2text==2020.1.16
 Jinja2==3.1.2
 MarkupSafe==2.1.2
 sqlparse==0.4.3
+flake8==6.0.0
+flake8-bugbear==23.5.9
+pytest==7.3.1
+coverage==7.2.7

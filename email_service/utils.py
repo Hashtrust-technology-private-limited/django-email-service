@@ -3,8 +3,6 @@ import os
 from email.mime.image import MIMEImage
 
 import html2text
-
-# from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.mail.message import EmailMultiAlternatives
@@ -16,14 +14,14 @@ logger = logging.getLogger("emails")
 
 def send_custom_email(
     recipient: list[str] | str,
-    path: str | None = None,
+    path: str = None,
     template: any = None,
-    template_prefix: str | None = None,
-    context: dict = {},
+    template_prefix: str = None,
+    context=None,
     subject: str = None,
     body: str = None,
     attachments: list[ContentFile] = None,
-    attachment_path: str | None = None,
+    attachment_path: str = None,
     enable_logo: bool = False,
 ) -> None:
     from email_service.models import Attachment, Email
@@ -66,7 +64,7 @@ def send_custom_email(
                 f"{path}/{template_prefix}.html" if path else f"{template_prefix}.html"
             )
             email_subject = (
-                render_to_string(subject_file).strip()
+                render_to_string(subject_file, context).strip()
                 if template_prefix and path
                 else subject
             )
