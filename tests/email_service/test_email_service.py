@@ -17,6 +17,7 @@ class TestEmail(TestCase):
         self.subject = "Welcome to Hashtrust"
         self.body = "Welcome to Hashtrust"
 
+    @pytest.mark.django_db
     def test_empty_recipients(self):
         response = send_custom_email(
             recipient=[],
@@ -29,6 +30,7 @@ class TestEmail(TestCase):
         )
         assert response == "Please provide at least one recipient."
 
+    @pytest.mark.django_db
     def test_empty_subject_or_templatepath(self):
         response = send_custom_email(
             recipient=self.recipients,
@@ -44,6 +46,7 @@ class TestEmail(TestCase):
             == "Please provide either path to html template or text subject of email."
         )
 
+    @pytest.mark.django_db
     def test_empty_body_or_templatepath(self):
         response = send_custom_email(
             recipient=self.recipients,
@@ -59,6 +62,7 @@ class TestEmail(TestCase):
             == "Please provide either path to html template or text body of email."
         )
 
+    @pytest.mark.django_db
     def test_invalid_email_selection(self):
         response = send_custom_email(
             recipient=self.recipients,
@@ -74,6 +78,7 @@ class TestEmail(TestCase):
             == "You can either send templated email or simple email at a time, not both."
         )
 
+    @pytest.mark.django_db
     def test_valid_email(self):
         files = [
             ContentFile(b"Hello World", name="file1.txt"),
