@@ -1,3 +1,4 @@
+import pytest
 from django.core.files.base import ContentFile
 from django.test import TestCase
 
@@ -6,6 +7,7 @@ from email_service.utils import send_custom_email
 
 # Create your tests here.
 class TestEmail(TestCase):
+    @pytest.mark.django_db
     def setUp(self) -> None:
         self.recipients = ["testuser@gmail.com"]
         self.path = "users"
