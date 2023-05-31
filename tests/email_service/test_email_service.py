@@ -1,4 +1,3 @@
-import pytest
 from django.core.files.base import ContentFile
 from django.test import TestCase
 
