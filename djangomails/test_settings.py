@@ -2,7 +2,7 @@
 To be used by pytests to override default database settings.
 """
 
-from .settings import *  # noqa
+from djangomails.settings import *  # noqa
 
 DATABASES = {
     "default": {
