@@ -4,6 +4,7 @@ from django.test import TestCase
 
 from email_service.utils import send_custom_email
 
+
 # Create your tests here.
 @pytest.mark.django_db
 class TestEmail(TestCase):
