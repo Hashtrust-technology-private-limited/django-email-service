@@ -5,7 +5,7 @@ WORKDIR /code
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV DJANGO_SETTINGS_MODULE "djangomails.test_settings"
+
 # install dependencies
 RUN apt update
 RUN apt install -y netcat
