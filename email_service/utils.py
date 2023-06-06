@@ -24,6 +24,23 @@ def send_custom_email(
     attachment_path: str = None,
     enable_logo: bool = False,
 ) -> None:
+    """This function is responsible to send emails and create emails in database model.
+
+    Parameters:
+    recipient (list[str]): List of Receivers emails
+    path (str): path to html file for email content and subject (path should be upto parent folder of html file inside template folder)
+    template (any): Object of Template Model if exists (Optional)
+    template_prefix (str): html file name
+    context (dict): context to replace variable name in template
+    subject (str): subject of email as string
+    body (str): content of email as string
+    attachment (list[ContentFile]): attach file to send email as attachement
+    attachment_path (str): send string path of attachment,
+    enable_logo (bool): set true to enable logo in email
+
+    Returns:
+    str : email success or error message
+    """
     from email_service.models import Attachment, Email
 
     if not recipient or len(recipient) == 0:
@@ -123,5 +140,8 @@ def send_custom_email(
             path-{path} template-{template_prefix}, recipient-{recipient},
             context-{context}, subject-{subject}, body-{body}"""
         )
+        email.remarks = f"""Caught exception {ex} while sending email with params:
+            path-{path} template-{template_prefix}, recipient-{recipient},
+            context-{context}, subject-{subject}, body-{body}"""
         email.status = Email.EmailStatus.error
         email.save()

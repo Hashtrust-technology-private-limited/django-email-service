@@ -27,6 +27,8 @@ Quick Start
 4. Add Templates path to your TEMPLATES in setting.py
 5. import method to send email ``from email_service.utils import send_custom_email``
 6. set ``LOGO_IMAGE_NAME`` variable in setting.py file to add logo in email (Name should include subfolder inside static folder)
+7. To send html email : Create html and txt files for email content and subject respectively. Name of both file should be same and txt file name should contain "_subject" as suffix.
+- for example : `welcome_email.html` and `welcome_email_subject.txt`
 
 Description
 -----------
@@ -45,11 +47,12 @@ send_custom_email(
 )
 ```
 * recipient : List of Receivers emails
-* path : path to email html template under templates folder
+* path : path to html file for email content and subject (path should be upto parent folder of html file inside template folder)
 * template : Object of Template Model if exists (Optional)
 * template_prefix : html file name
 * context : context to replace variable name in template
-* subject : subject of email
+* subject : subject of email as string
+* body : content of email as string
 * attachment: attach file to send email as attachement
 * attachment_path : send string path of attachment,
 * enable_logo : set true to enable logo in email

@@ -18,6 +18,8 @@ class CreatedUpdatedMixin(models.Model):
 
 
 class Attachment(CreatedUpdatedMixin):
+    """Stores the attachements of emails sent by application."""
+
     file = models.FileField(upload_to="email_attachements")
 
     def __str__(self) -> str:
@@ -25,6 +27,8 @@ class Attachment(CreatedUpdatedMixin):
 
 
 class Template(models.Model):
+    """Stores user's defined templates to be used in emails."""
+
     class TemplateType(models.IntegerChoices):
         email_verification = 0, _("User Email Verification")
         password_reset_email = 1, _("Password Reset")
@@ -47,6 +51,8 @@ class Template(models.Model):
 
 
 class Email(CreatedUpdatedMixin):
+    """Stores the emails sent by application."""
+
     class EmailStatus(models.IntegerChoices):
         pending = 0, _("Pending")
         error = 1, _("Error")
