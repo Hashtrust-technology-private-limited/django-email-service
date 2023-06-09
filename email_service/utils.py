@@ -110,7 +110,7 @@ def send_custom_email(
                 content_file = ContentFile(
                     file.read(), name=os.path.basename(attachment_path)
                 )
-                attachement = Attachment.objects.create(file_field=content_file)
+                attachement = Attachment.objects.create(file=content_file)
                 email.attachments.add(attachement)
             msg.attach_file(full_file_path)
 
