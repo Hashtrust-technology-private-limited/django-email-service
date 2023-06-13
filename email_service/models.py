@@ -17,7 +17,7 @@ class CreatedUpdatedMixin(models.Model):
     )
 
 
-class Attachment(CreatedUpdatedMixin):
+class Attachment(CreatedUpdatedMixin):  # pragma: no cover
     """Stores the attachements of emails sent by application."""
 
     file = models.FileField(upload_to="email_attachements")

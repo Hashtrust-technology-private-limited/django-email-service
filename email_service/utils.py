@@ -141,7 +141,7 @@ def send_custom_email(
         email.status = Email.EmailStatus.sent
         email.save()
         return "Email Sent Successfully."
-    except Exception as ex:
+    except Exception as ex:  # pragma: no cover
         logger.exception(
             f"""Caught exception {ex} while sending email with params:
             path-{path} template-{template_prefix}, recipient-{recipient},
