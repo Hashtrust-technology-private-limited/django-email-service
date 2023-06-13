@@ -103,14 +103,14 @@ class TestEmail(TestCase):
         assert response == "Email Sent Successfully."
 
     def test_email_with_attachement_path(self):
-        with open(f"{settings.MEDIA_ROOT}/sample_file.txt", "w") as file:
+        with open(f"{settings.STATIC_ROOT}/sample_file.txt", "w") as file:
             file.write("Sample File")
         response = send_custom_email(
             recipient=self.recipients,
             path=self.path,
             template_prefix=self.template_prefix,
             context=self.context,
-            attachment_path="media/sample_file.txt",
+            attachment_path="static/sample_file.txt",
         )
         assert response == "Email Sent Successfully."
 
