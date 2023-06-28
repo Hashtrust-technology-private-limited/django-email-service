@@ -1,4 +1,5 @@
 import logging
+import mimetypes
 import os
 from email.mime.image import MIMEImage
 
@@ -124,7 +125,15 @@ def send_custom_email(
         for attachement_file in attachments:
             attachement = Attachment.objects.create(file=attachement_file)
             email.attachments.add(attachement)
-            msg.attach_file(f"{settings.BASE_DIR}/{attachement.file.url}")
+            memetype = mimetypes.guess_type(attachement_file.name)
+
+            msg.attach(
+                attachement_file.name,
+                open(
+                    os.path.join(settings.BASE_DIR, attachement.file.path), "rb"
+                ).read(),
+                memetype[0] if memetype else None,
+            )
 
     if enable_logo:
         msg.content_subtype = "html"
