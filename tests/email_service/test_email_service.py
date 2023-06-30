@@ -1,5 +1,4 @@
 import pytest
-from django.conf import settings
 from django.core.files.base import ContentFile
 from django.test import TestCase
 
@@ -75,6 +74,19 @@ class TestEmail(TestCase):
             == f"Email template file or subject file not exists for prefix {template_prefix}"
         )
 
+    def test_invalid_part_data(self):
+        response = send_custom_email(
+            recipient=self.recipients,
+            path=self.path,
+            template_prefix=self.template_prefix,
+            context=self.context,
+            parts=[{"value": ""}],
+        )
+        assert (
+            response
+            == "Please provide valid part data. It should include name and data fields"
+        )
+
     def test_valid_simple_email(self):
         response = send_custom_email(
             recipient=self.recipients,
@@ -92,25 +104,13 @@ class TestEmail(TestCase):
         )
         assert response == "Email Sent Successfully."
 
-    def test_valid_email_with_attachement(self):
+    def test_valid_email_with_attachment(self):
         response = send_custom_email(
             recipient=self.recipients,
             path=self.path,
             template_prefix=self.template_prefix,
             context=self.context,
             attachments=self.files,
-        )
-        assert response == "Email Sent Successfully."
-
-    def test_email_with_attachement_path(self):
-        with open(f"{settings.STATIC_ROOT}/sample_file.txt", "w") as file:
-            file.write("Sample File")
-        response = send_custom_email(
-            recipient=self.recipients,
-            path=self.path,
-            template_prefix=self.template_prefix,
-            context=self.context,
-            attachment_path="static/sample_file.txt",
         )
         assert response == "Email Sent Successfully."
 
@@ -131,5 +131,15 @@ class TestEmail(TestCase):
             template=self.template,
             context=self.context,
             attachments=self.files,
+        )
+        assert response == "Email Sent Successfully."
+
+    def test_email_with_part_data(self):
+        response = send_custom_email(
+            recipient=self.recipients,
+            path=self.path,
+            template=self.template,
+            context=self.context,
+            parts=[{"name": "test_part.txt", "data": b"Hello Part Data"}],
         )
         assert response == "Email Sent Successfully."
