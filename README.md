@@ -42,7 +42,7 @@ send_custom_email(
     subject: str | None = None,
     body: str | None = None,
     attachment: any = None,
-    attachment_path : str | None = None,
+    parts:list[dict] = None,
     enable_logo : bool = False
 )
 ```
@@ -54,7 +54,7 @@ send_custom_email(
 * subject : subject of email as string
 * body : content of email as string
 * attachment: attach file to send email as attachement
-* attachment_path : send string path of attachment,
+* parts (list[dict]): list of dictionaries with part name and data
 * enable_logo : set true to enable logo in email
 
 

@@ -1,4 +1,5 @@
 import logging
+import mimetypes
 import os
 from email.mime.image import MIMEImage
 
@@ -22,7 +23,7 @@ def send_custom_email(
     subject: str = None,
     body: str = None,
     attachments: list[ContentFile] = None,
-    attachment_path: str = None,
+    parts: list[dict] = None,
     enable_logo: bool = False,
 ) -> str:
     """This function is responsible to send emails and create emails in database model.
@@ -36,7 +37,7 @@ def send_custom_email(
     subject (str): subject of email as string
     body (str): content of email as string
     attachment (list[ContentFile]): attach file to send email as attachement
-    attachment_path (str): send string path of attachment,
+    parts (list[dict]): list of dictionaries with part name and data
     enable_logo (bool): set true to enable logo in email
 
     Returns:
@@ -110,21 +111,26 @@ def send_custom_email(
     )
     msg.attach_alternative(html_content, "text/html")
 
-    if attachment_path:
-        full_file_path = f"{settings.BASE_DIR}/{attachment_path}"
-        with open(full_file_path, mode="rb") as file:
-            content_file = ContentFile(
-                file.read(), name=os.path.basename(attachment_path)
-            )
-            attachement = Attachment.objects.create(file=content_file)
-            email.attachments.add(attachement)
-        msg.attach_file(full_file_path)
+    if parts:
+        for part in parts:
+            if "name" not in part or "data" not in part:
+                return "Please provide valid part data. It should include name and data fields"
+            memetype = mimetypes.guess_type(part["name"])
+            msg.attach(part["name"], part["data"], memetype[0])
 
     if attachments:
         for attachement_file in attachments:
             attachement = Attachment.objects.create(file=attachement_file)
             email.attachments.add(attachement)
-            msg.attach_file(f"{settings.BASE_DIR}/{attachement.file.url}")
+            memetype = mimetypes.guess_type(attachement_file.name)
+
+            msg.attach(
+                attachement_file.name,
+                open(
+                    os.path.join(settings.BASE_DIR, attachement.file.path), "rb"
+                ).read(),
+                memetype[0] if memetype else None,
+            )
 
     if enable_logo:
         msg.content_subtype = "html"
