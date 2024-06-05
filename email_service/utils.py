@@ -141,6 +141,7 @@ def send_custom_email(
         with open(image_path, "rb") as banner_image:
             banner_image = MIMEImage(banner_image.read())
             banner_image.add_header("Content-ID", f"<{settings.LOGO_IMAGE_NAME}>")
+            banner_image.add_header("Content-Disposition", 'inline', filename=settings.LOGO_IMAGE_NAME)
             msg.attach(banner_image)
     try:
         msg.send()
